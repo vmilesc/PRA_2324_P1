@@ -29,23 +29,23 @@ public:
         }
     }
 
-    // Tamaño
-    int size() const override {
-        return n;
+    // Inserta al final
+    void append(T e) override {
+        insert(n, e);
     }
 
-    // Devuelve si está vacía
-    bool empty() const override {
-        return n == 0;
+    // Inserta al principio
+    void prepend(T e) override {
+        insert(0, e);
     }
 
     // Inserta en posición
     void insert(int pos, T e) override {
         if (pos < 0 || pos > n)
             throw std::out_of_range("posición inválida");
-        if (pos == 0) {
+        if (pos == 0)
             first = new Node<T>(e, first);
-        } else {
+        else {
             Node<T>* prev = first;
             for (int i = 0; i < pos - 1; i++)
                 prev = prev->next;
@@ -54,11 +54,12 @@ public:
         n++;
     }
 
-    // Elimina en posición
-    void erase(int pos) override {
+    // Elimina y devuelve elemento
+    T remove(int pos) override {
         if (pos < 0 || pos >= n)
             throw std::out_of_range("posición inválida");
         Node<T>* del;
+        T elem;
         if (pos == 0) {
             del = first;
             first = first->next;
@@ -69,12 +70,14 @@ public:
             del = prev->next;
             prev->next = del->next;
         }
+        elem = del->data;
         delete del;
         n--;
+        return elem;
     }
 
     // Devuelve elemento
-    T operator[](int pos) {
+    T get(int pos) override {
         if (pos < 0 || pos >= n)
             throw std::out_of_range("posición inválida");
         Node<T>* cur = first;
@@ -83,7 +86,35 @@ public:
         return cur->data;
     }
 
-    // Imprime lista
+    // Devuelve posición de un elemento
+    int search(T e) override {
+        Node<T>* cur = first;
+        int i = 0;
+        while (cur != nullptr) {
+            if (cur->data == e)
+                return i;
+            cur = cur->next;
+            i++;
+        }
+        return -1;
+    }
+
+    // Tamaño
+    int size() override {
+        return n;
+    }
+
+    // Vacía
+    bool empty() override {
+        return n == 0;
+    }
+
+    // Operador []
+    T operator[](int pos) {
+        return get(pos);
+    }
+
+    // Imprimir lista
     friend std::ostream& operator<<(std::ostream& out, const ListLinked<T>& list) {
         Node<T>* cur = list.first;
         out << "[";
